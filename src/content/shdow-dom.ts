@@ -1,19 +1,20 @@
-const tag='gpt-container'
-const containerId='gpt_extension'
+import '@webcomponents/custom-elements';
 
 
-class GptContainer extends HTMLElement{
-  constructor(){
+const tag = 'gpt-container'
+const containerId = 'gpt_extension'
+
+
+class GptContainer extends HTMLElement {
+  constructor() {
     super()
     // 创建一个沙盒
     const shadow = this.attachShadow({ mode: 'open' })
-    const container=document.createElement('div')
-    container.setAttribute('id',containerId)
+    const container = document.createElement('div')
+    container.setAttribute('id', containerId)
     shadow.appendChild(container)
   }
 }
 
-
-customElements.define(tag,GptContainer)
-
-export {tag,containerId}
+customElements.define(tag, GptContainer)
+export { tag, containerId }

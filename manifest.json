@@ -19,9 +19,6 @@
       "js": [
         "dist/content/index.js"
       ],
-      "css": [
-        "dist/content/index.css"
-      ],
       "matches": [
         "*://*/*"
       ],
