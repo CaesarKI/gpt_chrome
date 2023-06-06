@@ -1,5 +1,5 @@
 
-export const API_KEY='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'
+export const API_KEY='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'
 
 export const MODEL='gpt-3.5-turbo'
 
