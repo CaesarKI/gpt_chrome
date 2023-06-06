@@ -1,0 +1,36 @@
+{
+  "name": "gpt_chrome",
+  "version": "1.0.0",
+  "description": "A GPT Powered Extension helping your writing and reading",
+  "manifest_version": 3,
+  "author": "https://github.com/CaesarKI",
+  "action": {
+    "default_title": "gpt_chrome",
+    "defult_icon": "dist/assets/icon.png"
+  },
+  "icons": {
+    "16": "dist/assets/icon.png",
+    "32": "dist/assets/icon.png",
+    "48": "dist/assets/icon.png",
+    "128": "dist/assets/icon.png"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "dist/content/index.js"
+      ],
+      "css": [
+        "dist/content/index.css"
+      ],
+      "matches": [
+        "*://*/*"
+      ],
+      "all_frames": true
+    }
+  ],
+  "permissions": [
+    "storage",
+    "clipboardRead",
+    "contextMenus"
+  ]
+}

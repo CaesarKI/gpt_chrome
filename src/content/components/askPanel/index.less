@@ -1,0 +1,26 @@
+.askPanel {
+  max-width: 350px;
+  max-height: 320px;
+  
+  .content {
+    position: relative;
+    .drag {
+      user-select: none;
+      position: absolute;
+      z-index: 10;
+      top: 7px;
+      left: 5px;
+      font-size: 16px;
+      cursor: grab;
+      &:active {
+        cursor: grabbing;
+
+      }
+    }
+    :global {
+      .ant-input {
+        padding-left: 25px ;
+      }
+    }
+  }
+}
