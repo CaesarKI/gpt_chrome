@@ -8,6 +8,7 @@ import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { message } from 'antd'
 import store from '../../store'
 import { handelPrompt } from '@/server/openai';
+import { tag } from '@/content/shdow-dom';
 
 export interface ResultPanelType {
   onChangePanel: (flag: boolean) => void
@@ -22,6 +23,8 @@ export default function ResultPanel(props: ResultPanelType) {
   const iconRef = useRef(null)
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
+  const container = document.querySelector(tag)
+  const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
 
   const handler = (text: string, err: any, end: boolean | undefined) => {
 
@@ -58,7 +61,7 @@ export default function ResultPanel(props: ResultPanelType) {
 
   const handelClose = (e: any) => {
     cancelRequest()
-    var card = document.querySelector('#card');
+    var card = shadowRoot.querySelector('#card');
     if (card) {
       card.remove();
     }
@@ -67,7 +70,7 @@ export default function ResultPanel(props: ResultPanelType) {
   }
 
   const handelCopy = (e: any) => {
-    navigator.clipboard.writeText('测试')
+    navigator.clipboard.writeText(text)
       .then(() => {
         message.info('内容已经复制到剪切板')
       }).catch(() => {
