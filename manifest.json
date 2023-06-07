@@ -25,6 +25,18 @@
       "all_frames": true
     }
   ],
+  "background": {
+    "service_worker": "dist/background/index.js"
+  },
+  "commands": {
+    "open-content": {
+      "suggested_key": {
+        "default": "Alt+1",
+        "mac": "Command+1"
+      },
+      "description": "Open Content"
+    }
+  },
   "permissions": [
     "storage",
     "clipboardRead",

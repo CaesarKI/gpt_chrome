@@ -31,7 +31,7 @@ export default function AskPanel(props: ResultPanelType) {
 
   useEffect(() => {
     const current: any = inputRef.current
-    if (current) {
+    if (current && value) {
       current.focus()
       const textareaEle = current.resizableTextArea.textArea
       textareaEle.setSelectionRange(value.length, value.length);

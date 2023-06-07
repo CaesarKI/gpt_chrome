@@ -27,14 +27,14 @@ export default () => {
         // new MiniCssExtractPlugin({
         //   filename: 'index.css', // CSS 文件的输出名称
         // }),
-        new CleanWebpackPlugin({
-          cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, 'dist')],
-        }),
-        new HtmlWebpackPlugin({
-          template: path.resolve(__dirname, `./src/${dirname}/index.html`), // 使用的 HTML 模板文件
-          filename: 'index.html', // 生成的 HTML 文件名
-          inject: false,
-        }),
+        // new CleanWebpackPlugin({
+        //   cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, 'dist')],
+        // }),
+        // new HtmlWebpackPlugin({
+        //   template: path.resolve(__dirname, `./src/${dirname}/index.html`), // 使用的 HTML 模板文件
+        //   filename: 'index.html', // 生成的 HTML 文件名
+        //   inject: false,
+        // }),
         new CopyWebpackPlugin({
           patterns: [
             { from: 'src/assets/', to: '../assets' },
@@ -102,6 +102,7 @@ export default () => {
   }
   const filePathMap = {
     content: path.resolve(__dirname, './src/content'),
+    background: path.resolve(__dirname, './src/background'),
   }
 
   Object.keys(filePathMap).forEach((key) => {
