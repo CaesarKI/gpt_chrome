@@ -1,14 +1,21 @@
-import React, { DOMElement, useEffect, useRef, useState } from 'react'
+import React, { DOMElement, useEffect, useRef, useState, ReactNode } from 'react'
 import style from './index.less'
 import { ArrowLeftOutlined, CloseOutlined, CopyOutlined, RedoOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { useScroll } from '../../hooks'
 import ReactMarkdown from 'react-markdown';
+// import { faCopy } from '@fortawesome/free-solid-svg-icons'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import clipboardy from 'clipboardy'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { message } from 'antd'
 import store from '../../store'
 import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
+import classNames from 'classnames'
 
 export interface ResultPanelType {
   onChangePanel: (flag: boolean) => void
@@ -79,6 +86,16 @@ export default function ResultPanel(props: ResultPanelType) {
     e.stopPropagation()
   }
 
+  const handleCodeCopy = (text: any) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        message.info('内容已经复制到剪切板')
+      }).catch(() => {
+        message.info('内容复制失败')
+      })
+    // e.stopPropagation()
+  }
+
   const cancelRequest = () => {
     if (controllerRef.current.abort) {
       controllerRef.current.abort()
@@ -91,7 +108,7 @@ export default function ResultPanel(props: ResultPanelType) {
     e.stopPropagation()
   }
 
-  const handelGenerator=()=>{
+  const handelGenerator = () => {
     cancelRequest()
     getMessage()
     setText("")
@@ -99,6 +116,37 @@ export default function ResultPanel(props: ResultPanelType) {
 
   }
 
+
+  const ClickTooltip = (props: { className?: string; children: ReactNode }) => {
+    const [tip, setTip] = useState('copy')
+    return (
+      <span
+        onClick={() => setTip('copied')}
+        className={style.copy}
+        data-placement={'left'}
+        data-tooltip={tip}
+        onMouseLeave={() => setTip('copy')}
+      >
+        {props.children}
+      </span>
+    )
+  }
+
+  const CopyButton = (props: { children: ReactNode }) => {
+
+    return (
+      <ClickTooltip >
+        <CopyOutlined className={style.icon} onClick={() => {
+          clipboardy.write(String(props.children)).then(() => {
+            message.info('内容已经复制到剪切板')
+          }).catch(() => {
+            message.info('内容复制失败')
+          })
+
+        }} />
+      </ClickTooltip>
+    )
+  }
   const CodeBlock = (props: any) => {
     return (
       <SyntaxHighlighter language={props.className} style={materialDark}>
@@ -108,7 +156,50 @@ export default function ResultPanel(props: ResultPanelType) {
   };
 
   const markdownRender = () => {
-    return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
+    // return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
+    // className = { css.MarkdownContent }
+    return (
+      <ReactMarkdown
+        className={style.MarkdownContent}
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          code({ node, inline, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || '')
+            if (inline) {
+              return (
+                <code className={classNames(className)} {...props}>
+                  {children}
+                </code>
+              )
+            }
+            return inline ? (
+              <code className={classNames(className)} {...props}>
+                {children}
+              </code>
+            ) : match ? (
+              <>
+                <CopyButton>{children}</CopyButton>
+                <SyntaxHighlighter children={String(children).replace(/\n$/, '')}
+                  style={vscDarkPlus as any}
+                  language={match[1]}
+                  PreTag="div"
+                  {...props} />
+              </>
+            ) : (
+              <>
+                <CopyButton>{children}</CopyButton>
+                <code className={classNames(className)} {...props}>
+                  {children}
+                </code>
+              </>
+            )
+          },
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    )
   }
 
 
