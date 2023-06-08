@@ -2,19 +2,19 @@ import React, { useRef } from 'react'
 import { tag } from '../shdow-dom'
 
 
-type UseScrollType={
+type UseScrollType = {
   dragRef: React.MutableRefObject<null>
-  handleMouseDown:(event:any)=>void
+  handleMouseDown: (event: any) => void
 }
 
-export function useScroll():[UseScrollType["dragRef"],UseScrollType["handleMouseDown"]] {
+export function useScroll(): [UseScrollType["dragRef"], UseScrollType["handleMouseDown"]] {
   const dragRef = useRef(null)
   let offsetX: number, offsetY: number
 
   // 鼠标移动事件
   function handleMouseMove(event: any) {
     const container = document.querySelector(tag)
-    const shadowRoot:ShadowRoot =container.shadowRoot as ShadowRoot
+    const shadowRoot: ShadowRoot = container.shadowRoot as ShadowRoot
     const card: any = shadowRoot.getElementById('card')
     if (card) {
       const newX = event.clientX - offsetX;
@@ -28,7 +28,7 @@ export function useScroll():[UseScrollType["dragRef"],UseScrollType["handleMouse
   }
 
   // 鼠标松开事件
-  function handleMouseUp(event:any) {
+  function handleMouseUp(event: any) {
     // 解绑拖拽事件
     event.stopPropagation()
     window.removeEventListener('mousemove', handleMouseMove);
@@ -38,12 +38,13 @@ export function useScroll():[UseScrollType["dragRef"],UseScrollType["handleMouse
 
   // 鼠标按下事件
   function handleMouseDown(event: any) {
+
     const element = event.target
     const current: any = dragRef.current
     const elementRect = element.getBoundingClientRect()
     if (current) {
-      offsetX = event.clientX-elementRect.left;
-      offsetY = event.clientY-elementRect.top
+      offsetX = event.clientX - elementRect.left;
+      offsetY = event.clientY - elementRect.top
       // 绑定拖拽事件
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
