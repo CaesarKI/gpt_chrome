@@ -147,17 +147,10 @@ export default function ResultPanel(props: ResultPanelType) {
       </ClickTooltip>
     )
   }
-  const CodeBlock = (props: any) => {
-    return (
-      <SyntaxHighlighter language={props.className} style={materialDark}>
-        {props.children[0]}
-      </SyntaxHighlighter>
-    );
-  };
+
 
   const markdownRender = () => {
-    // return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
-    // className = { css.MarkdownContent }
+
     return (
       <ReactMarkdown
         className={style.MarkdownContent}
