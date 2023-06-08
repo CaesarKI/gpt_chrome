@@ -45,10 +45,6 @@
     "webpack-dev-server": "^4.15.0"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "@types/marked": "^5.0.0",
-    "marked": "^5.0.3",
     "react-markdown": "^8.0.7"
   }
 }
