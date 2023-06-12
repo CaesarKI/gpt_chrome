@@ -25,6 +25,10 @@
       "all_frames": true
     }
   ],
+  "options_ui": {
+    "page": "dist/options/index.html",
+    "open_in_tab": true
+  },
   "background": {
     "service_worker": "dist/background/index.js"
   },

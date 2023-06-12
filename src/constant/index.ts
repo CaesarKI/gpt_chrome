@@ -1,8 +1,22 @@
+import { Configuration, OpenAIApi } from 'openai'
+import browser from 'webextension-polyfill'
+import store from '@/content/store'
 
-export const API_KEY='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'
+const generateGpt = (key) => {
+  const config = new Configuration({
+    apiKey: key,
+  })
+  return new OpenAIApi(config)
+}
 
-export const MODEL='gpt-3.5-turbo'
 
-export const Temperature=0
-
-export const BASE_URL= 'https://api.openai.com/v1/chat'
+browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.type === "change") {
+    // 执行相应的操作
+    console.log("Received message from options_ui");
+    const { value = {} } = message
+    store.setValue('openai', value)
+    const gpt = generateGpt(value.key)
+    store.setValue('gpt', gpt)
+  }
+});

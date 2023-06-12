@@ -1,13 +1,4 @@
-import { Configuration, OpenAIApi } from 'openai'
-import { API_KEY, MODEL, Temperature } from '@/constant/index'
-
-let gpt: any
-const config = new Configuration({
-  apiKey: API_KEY,
-})
-
-gpt = new OpenAIApi(config)
-
+import store from '@/content/store'
 
 const axiosOptionForOpenAI = (
   onData: (text: string, err?: any, end?: boolean) => void
@@ -19,7 +10,7 @@ const axiosOptionForOpenAI = (
         onData('', new Error(e.currentTarget.responseText), false)
         return
       }
-  
+
       const lines = e.currentTarget.response
         .toString()
         .split('\n')
@@ -73,16 +64,17 @@ const axiosOptionForOpenAI = (
   },
 })
 
-export const handelPrompt = async(prompt: string,ref:any,onData: (text: string, err?: any, end?: boolean) => void) => {
+export const handelPrompt = async (prompt: string, ref: any, onData: (text: string, err?: any, end?: boolean) => void) => {
+  const gpt = store.getValue('gpt')
+  const openai = store.getValue('openai')
   const controller = new AbortController();
-
   const commonOption = {
     max_tokens: 4000 - prompt.replace(/[\u4e00-\u9fa5]/g, 'aa').length,
     stream: true,
-    model: MODEL,
-    temperature: Temperature,
+    model: openai.model,
+    temperature: Number(openai.temperature),
   }
-  ref.current=controller
+  ref.current = controller
 
   try {
     await gpt.createChatCompletion(
@@ -95,7 +87,7 @@ export const handelPrompt = async(prompt: string,ref:any,onData: (text: string, 
         signal: controller.signal
       }
     )
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error.message);
   }
 }

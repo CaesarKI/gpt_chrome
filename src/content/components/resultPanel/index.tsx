@@ -5,6 +5,7 @@ import { useScroll } from '../../hooks'
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import browser from 'webextension-polyfill'
 import { message } from 'antd'
 import store from '../../store'
 import { handelPrompt } from '@/server/openai';
@@ -44,8 +45,11 @@ export default function ResultPanel(props: ResultPanelType) {
 
   const getMessage = async () => {
     const value = store.getValue('prompt')
-    if (value) {
-      handelPrompt(value, controllerRef, handler)
+    const openai = store.getValue('openai')
+    if (typeof openai === 'object' && openai.key) {
+      value && handelPrompt(value, controllerRef, handler)
+    } else {
+      return message.info('apiKey不存在请到点击设置, 配置apiKey')
     }
   }
 
@@ -91,7 +95,7 @@ export default function ResultPanel(props: ResultPanelType) {
     e.stopPropagation()
   }
 
-  const handelGenerator=()=>{
+  const handelGenerator = () => {
     cancelRequest()
     getMessage()
     setText("")
@@ -111,6 +115,12 @@ export default function ResultPanel(props: ResultPanelType) {
     return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
   }
 
+  const jump = () => {
+    console.log('jump')
+    browser.runtime.sendMessage({
+      type: "jump"
+    });
+  }
 
   return (
     <div className={style.resultPanel}>
@@ -120,7 +130,7 @@ export default function ResultPanel(props: ResultPanelType) {
           <CloseOutlined className={style.icon} onClick={handelClose} />
         </div>
         <div className={style.right}>
-          <SettingOutlined className={style.icon} />
+          <SettingOutlined className={style.icon} onClick={jump} />
         </div>
       </div>
       <div className={style.body}>

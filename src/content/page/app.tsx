@@ -6,6 +6,7 @@ import Panel from '../components/index';
 import './app.less'
 import { tag, containerId } from '../shdow-dom';
 import browser from 'webextension-polyfill'
+import { Configuration, OpenAIApi } from 'openai';
 
 
 export default function App() {
@@ -65,7 +66,7 @@ export default function App() {
     document.addEventListener('click', handelClick);
   }
 
-  const createContainer=(parentElement:Element)=>{
+  const createContainer = (parentElement: Element) => {
     const container = document.createElement('div')
     container.setAttribute('id', 'container')
     parentElement.appendChild(container)
@@ -74,7 +75,7 @@ export default function App() {
   }
 
 
-  const createCard=()=>{
+  const createCard = () => {
     store.setValue('text', "")
     const child = root.querySelector('#card')
     if (child) return
@@ -83,6 +84,20 @@ export default function App() {
     card.style.cssText = `left:50%;top:30%;transform:translate(-50%,-50%)`
     root.appendChild(card);
     createContainer(card)
+  }
+
+  const generateGpt = (key) => {
+    const config = new Configuration({
+      apiKey: key,
+    })
+    return new OpenAIApi(config)
+  }
+
+  const getkey = async () => {
+    const value = await browser.storage.sync.get('openai');
+    store.setValue('openai', value.openai)
+    const gpt = generateGpt(value.openai.key)
+    store.setValue('gpt', gpt)
   }
 
   const handelMessage = () => {
@@ -95,9 +110,11 @@ export default function App() {
     });
   }
 
+
   useEffect(() => {
     handelEvent()
     handelMessage()
+    getkey()
   }, [])
 
 }

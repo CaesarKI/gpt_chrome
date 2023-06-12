@@ -17,6 +17,7 @@ const jsonData = JSON.parse(
 export default () => {
   let config = []
   const template = function (basePath, dirname) {
+    console.log(dirname)
     return {
       entry: basePath,
       output: {
@@ -65,12 +66,12 @@ export default () => {
                   insert: function (element) {
                     setTimeout(() => {
                       const container = document.querySelector('gpt-container')
-                      // 在这里指定样式挂载的位置
-                      // element 是包含样式的 <style> 元素
-                      // 可以将 element 插入到指定位置
-                      // 例如使用 jQuery 将 element 插入到指定的元素中
-                      container.shadowRoot.append(element)
+                      if (container) {
+                        container.shadowRoot.append(element)
+                      }
                     })
+                    const head = document.querySelector('head')
+                    head.append(element)
                   },
                 },
               },
@@ -103,10 +104,20 @@ export default () => {
   const filePathMap = {
     content: path.resolve(__dirname, './src/content'),
     background: path.resolve(__dirname, './src/background'),
+    options: path.resolve(__dirname, './src/options'),
   }
 
   Object.keys(filePathMap).forEach((key) => {
     const result = template(filePathMap[key], key)
+    if (key === 'options') {
+      result.plugins.push(
+        new HtmlWebpackPlugin({
+          template: path.resolve(__dirname, `./src/${key}/index.html`), // 使用的 HTML 模板文件
+          filename: 'index.html', // 生成的 HTML 文件名
+          inject: true,
+        })
+      )
+    }
     config.push(result)
   })
 
