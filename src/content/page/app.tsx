@@ -81,7 +81,7 @@ export default function App() {
     if (child) return
     var card = document.createElement('div');
     card.setAttribute('id', 'card')
-    card.style.cssText = `left:50%;top:30%;transform:translate(-50%,-50%)`
+    card.style.cssText = `left:50%;top:0;transform:translateX(-50%)`
     root.appendChild(card);
     createContainer(card)
   }
