@@ -39,6 +39,7 @@ export default () => {
         new CopyWebpackPlugin({
           patterns: [
             { from: 'src/assets/', to: '../assets' },
+            { from: 'manifest.json', to: '../manifest.json' },
             // 可以添加多个文件和目标路径的配置
           ],
         }),
