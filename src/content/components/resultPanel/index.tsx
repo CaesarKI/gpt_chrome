@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import browser from 'webextension-polyfill'
 import { message } from 'antd'
+import remarkGfm from 'remark-gfm'
 import store from '../../store'
 import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
@@ -112,7 +113,7 @@ export default function ResultPanel(props: ResultPanelType) {
   };
 
   const markdownRender = () => {
-    return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
+    return <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
   }
 
   const jump = () => {
@@ -137,7 +138,7 @@ export default function ResultPanel(props: ResultPanelType) {
         <div className={style.stop}>
           {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
         </div>
-        {markdownRender()}
+        <pre>{markdownRender()}</pre> 
       </div>
       <div className={style.footer}>
         <CopyOutlined className={style.icon} onClick={handelCopy} />
