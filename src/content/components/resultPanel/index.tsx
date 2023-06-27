@@ -8,9 +8,15 @@ import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import browser from 'webextension-polyfill'
 import { message } from 'antd'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css' // `rehype-katex` does not import the CSS for you
 import store from '../../store'
 import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
+
+
+
 
 export interface ResultPanelType {
   onChangePanel: (flag: boolean) => void
@@ -104,16 +110,44 @@ export default function ResultPanel(props: ResultPanelType) {
 
   }
 
-  const CodeBlock = (props: any) => {
+  const CodeBlock = ({ node, inline, className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || '')
+    const handelCopyCode = () => {
+      navigator.clipboard.writeText(children)
+        .then(() => {
+          message.info('内容已经复制到剪切板')
+        }).catch(() => {
+          message.info('内容复制失败')
+        })
+    }
+
     return (
-      <SyntaxHighlighter language={props.className} style={materialDark}>
-        {props.children[0]}
-      </SyntaxHighlighter>
-    );
-  };
+      <div className={style.block}>
+        {match && <CopyOutlined className={`${style.icon} ${style.codeIcon}`} onClick={handelCopyCode} />}
+        {match ? (
+          <SyntaxHighlighter
+            {...props}
+            children={String(children).replace(/\n$/, '')}
+            style={materialDark}
+            language={match[1]}
+            PreTag="div"
+          />
+        ) : (
+          <code {...props} className={className}>
+            {String(children).replace(/\n$/, '')}
+          </code>
+        )}
+      </div>
+    )
+  }
 
   const markdownRender = () => {
-    return <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
+    return <ReactMarkdown
+      remarkPlugins={[remarkMath, remarkGfm]}
+      rehypePlugins={[rehypeKatex]}
+      components={{
+        code: CodeBlock
+      }}>{text}</ReactMarkdown>;
   }
 
   const jump = () => {
@@ -138,7 +172,7 @@ export default function ResultPanel(props: ResultPanelType) {
         <div className={style.stop}>
           {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
         </div>
-        <pre>{markdownRender()}</pre> 
+        <div>{markdownRender()}</div>
       </div>
       <div className={style.footer}>
         <CopyOutlined className={style.icon} onClick={handelCopy} />
@@ -148,3 +182,5 @@ export default function ResultPanel(props: ResultPanelType) {
     </div>
   )
 }
+
+
