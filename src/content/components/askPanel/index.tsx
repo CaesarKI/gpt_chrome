@@ -50,7 +50,7 @@ export default function AskPanel(props: ResultPanelType) {
             rows={1}
             value={value}
             placeholder="please input your questions"
-            style={{ width: 300, wordBreak: 'break-all' }}
+            style={{ width: '100%', wordBreak: 'break-all' }}
             autoSize
             allowClear
             bordered
