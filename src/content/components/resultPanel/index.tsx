@@ -16,8 +16,6 @@ import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
 
 
-
-
 export interface ResultPanelType {
   onChangePanel: (flag: boolean) => void
   onChangeMessage?: (message: string) => void
@@ -157,29 +155,29 @@ export default function ResultPanel(props: ResultPanelType) {
     });
   }
 
-  return (
-    <div className={style.resultPanel}>
-      <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
-        <div className={style.left}>
-          <ArrowLeftOutlined className={style.icon} onClick={handelback} />
-          <CloseOutlined className={style.icon} onClick={handelClose} />
-        </div>
-        <div className={style.right}>
-          <SettingOutlined className={style.icon} onClick={jump} />
-        </div>
-      </div>
-      <div className={style.body}>
-        <div className={style.stop}>
-          {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
-        </div>
-        <div>{markdownRender()}</div>
-      </div>
-      <div className={style.footer}>
-        <CopyOutlined className={style.icon} onClick={handelCopy} />
-        <RedoOutlined className={style.icon} onClick={handelGenerator} />
-      </div>
 
-    </div>
+  return (
+      <div className={style.resultPanel} id='resultPandel'  >
+        <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
+          <div className={style.left} onMouseDown={e => e.stopPropagation()} >
+            <ArrowLeftOutlined className={style.icon} onClick={handelback} />
+            <CloseOutlined className={style.icon} onClick={handelClose} />
+          </div>
+          <div className={style.right} onMouseDown={e => e.stopPropagation()}>
+            <SettingOutlined className={style.icon} onClick={jump} />
+          </div>
+        </div>
+        <div className={style.body}>
+          <div className={style.stop}>
+            {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
+          </div>
+          <div>{markdownRender()}</div>
+        </div>
+        <div className={style.footer}>
+          <CopyOutlined className={style.icon} onClick={handelCopy} />
+          <RedoOutlined className={style.icon} onClick={handelGenerator} />
+        </div>
+      </div>
   )
 }
 

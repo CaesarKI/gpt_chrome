@@ -23,7 +23,8 @@ export default function App() {
         return
       }
       var card = shadowRoot.querySelector('#card');
-      if (card && container !== event.target) {
+      const resultPandel = shadowRoot.querySelector('#resultPandel')
+      if (card && container !== event.target && !resultPandel) {
         card.remove();
       }
     }
