@@ -33,7 +33,6 @@ export default function ResultPanel(props: ResultPanelType) {
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
 
   const handler = (text: string, err: any, end: boolean | undefined) => {
-
     if (end) {
       setText(text)
       setLoading(false)
@@ -48,8 +47,17 @@ export default function ResultPanel(props: ResultPanelType) {
     }
   }
 
+  const quickReplace=(value)=>{
+    const reg=/(\$1)$/
+    if(reg.test(value)){
+      value=value.replace(reg,"翻译为中文")
+    }
+    return value
+  }
+
   const getMessage = async () => {
-    const value = store.getValue('prompt')
+    let value = store.getValue('prompt')
+    value=quickReplace(value)
     const openai = store.getValue('openai')
     if (typeof openai === 'object' && openai.key) {
       value && handelPrompt(value, controllerRef, handler)
