@@ -47,17 +47,17 @@ export default function ResultPanel(props: ResultPanelType) {
     }
   }
 
-  const quickReplace=(value)=>{
-    const reg=/(\$1)$/
-    if(reg.test(value)){
-      value=value.replace(reg,"翻译为中文")
+  const quickReplace = (value) => {
+    const reg = /(\$1)$/
+    if (reg.test(value)) {
+      value = value.replace(reg, "翻译为中文")
     }
     return value
   }
 
   const getMessage = async () => {
     let value = store.getValue('prompt')
-    value=quickReplace(value)
+    value = quickReplace(value)
     const openai = store.getValue('openai')
     if (typeof openai === 'object' && openai.key) {
       value && handelPrompt(value, controllerRef, handler)
@@ -127,10 +127,10 @@ export default function ResultPanel(props: ResultPanelType) {
         })
     }
 
-    return (
-      <div className={style.block}>
-        {match && <CopyOutlined className={`${style.icon} ${style.codeIcon}`} onClick={handelCopyCode} />}
-        {match ? (
+    const renderBlock = () => {
+      return (
+        <div className={style.block} >
+          <CopyOutlined className={`${style.icon} ${style.codeIcon}`} onClick={handelCopyCode} />
           <SyntaxHighlighter
             {...props}
             children={String(children).replace(/\n$/, '')}
@@ -138,33 +138,45 @@ export default function ResultPanel(props: ResultPanelType) {
             language={match[1]}
             PreTag="div"
           />
-        ) : (
-          <code {...props} className={className}>
-            {String(children).replace(/\n$/, '')}
-          </code>
-        )}
-      </div>
-    )
-  }
+        </div >
+      )
+    }
+    const renderRow = () => {
+      return (
+        <code {
+          ...props
+        } className={className} >
+          {String(children).replace(/\n$/, '')}
+        </code >
+      )
+    }
+    if(match){
+      return renderBlock()
+    }else{
+      return renderRow()
+    }
 
-  const markdownRender = () => {
-    return <ReactMarkdown
-      remarkPlugins={[remarkMath, remarkGfm]}
-      rehypePlugins={[rehypeKatex]}
-      components={{
-        code: CodeBlock
-      }}>{text}</ReactMarkdown>;
-  }
-
-  const jump = () => {
-    console.log('jump')
-    browser.runtime.sendMessage({
-      type: "jump"
-    });
   }
 
 
-  return (
+    const markdownRender = () => {
+      return <ReactMarkdown
+        remarkPlugins={[remarkMath, remarkGfm]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          code: CodeBlock
+        }}>{text}</ReactMarkdown>;
+    }
+
+    const jump = () => {
+      console.log('jump')
+      browser.runtime.sendMessage({
+        type: "jump"
+      });
+    }
+
+
+    return (
       <div className={style.resultPanel} id='resultPandel'  >
         <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
           <div className={style.left} onMouseDown={e => e.stopPropagation()} >
@@ -186,7 +198,7 @@ export default function ResultPanel(props: ResultPanelType) {
           <RedoOutlined className={style.icon} onClick={handelGenerator} />
         </div>
       </div>
-  )
-}
+    )
+  }
 
 
