@@ -1,4 +1,4 @@
-import React, { DOMElement, useEffect, useRef, useState } from 'react'
+import React, { DOMElement, useEffect, useMemo, useRef, useState } from 'react'
 import style from './index.less'
 import { ArrowLeftOutlined, CloseOutlined, CopyOutlined, RedoOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { useScroll } from '../../hooks'
@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import browser from 'webextension-polyfill'
-import { message } from 'antd'
+import { message, Tooltip } from 'antd'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
@@ -30,9 +30,14 @@ export default function ResultPanel(props: ResultPanelType) {
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
   const [ending, setEnding] = useState(false)
+  const [flag, setFlag] = useState(true)
   const container = document.querySelector(tag)
-  const bodyRef=useRef(null)
+  const bodyRef = useRef(null)
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
+
+  const bodyStyle = useMemo(() => {
+    return !ending ? { 'borderBottomLeftRadius': 15, 'borderBottomRightRadius': 15 } : { 'borderRadius': 0 }
+  }, [ending])
 
   const handler = (text: string, err: any, end: boolean | undefined) => {
     if (end) {
@@ -45,17 +50,30 @@ export default function ResultPanel(props: ResultPanelType) {
     if (err) {
       setText(err.message)
       setLoading(false)
+      setEnding(true)
     } else {
       setText(text)
-      handelScroll()
     }
   }
 
-  const handelScroll=()=>{
-    if(bodyRef.current){
-      bodyRef.current.scrollTop=bodyRef.current.scrollHeight
+  useEffect(() => {
+    if (flag && bodyRef.current) {
+      const current = bodyRef.current
+      current.scrollTop = current.scrollHeight;
     }
-  }
+  }, [text])
+
+  // const handelScrollBottom = () => {
+  //   if (bodyRef.current) {
+  //     const current = bodyRef.current
+  //     if (current.scrollTop + current.clientHeight >= current.scrollHeight) {
+  //       current.scrollTop = current.scrollHeight;
+  //       console.log(current.scrollTop, current.clientHeight, current.scrollHeight);
+  //     }
+  //   }
+    
+  //   setFlag(false)
+  // }
 
   const quickReplace = (value) => {
     const reg = /(\$1)$/
@@ -115,6 +133,7 @@ export default function ResultPanel(props: ResultPanelType) {
   const handelStop = (e: any) => {
     cancelRequest()
     setLoading(false)
+    setEnding(true)
     e.stopPropagation()
   }
 
@@ -123,7 +142,7 @@ export default function ResultPanel(props: ResultPanelType) {
     getMessage()
     setText("")
     setLoading(true)
-
+    setEnding(false)
   }
 
   const CodeBlock = ({ node, inline, className, children, ...props }) => {
@@ -194,19 +213,27 @@ export default function ResultPanel(props: ResultPanelType) {
           <CloseOutlined className={style.icon} onClick={handelClose} />
         </div>
         <div className={style.right} onMouseDown={e => e.stopPropagation()}>
-          <SettingOutlined className={style.icon} onClick={jump} />
+          <Tooltip title='跳转到配置面板' zIndex={11111}>
+            <SettingOutlined className={style.icon} onClick={jump} />
+          </Tooltip>
         </div>
       </div>
-      <div className={style.body} ref={bodyRef}>
+      <div className={`${style.body}`} ref={bodyRef} style={bodyStyle}  >
         <div className={style.stop}>
-          {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
+          {loading && (
+            <Tooltip title='停止生成对话' zIndex={11111}>
+              <SyncOutlined spin onClick={handelStop} ref={iconRef} />
+            </Tooltip>
+          )}
         </div>
         <div>{markdownRender()}</div>
       </div>
-      {ending && <div className={style.footer}>
+      {ending && (<div className={style.footer}>
         <CopyOutlined className={style.icon} onClick={handelCopy} />
-        <RedoOutlined className={style.icon} onClick={handelGenerator} />
-      </div>}
+        <Tooltip title='再次生成对话' zIndex={11111}>
+          <RedoOutlined className={style.icon} onClick={handelGenerator} />
+        </Tooltip>
+      </div>)}
     </div>
   )
 }

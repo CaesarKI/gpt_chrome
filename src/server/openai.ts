@@ -3,15 +3,15 @@ import store from '@/content/store'
 const axiosOptionForOpenAI = (
   onData: (text: string, err?: any, end?: boolean) => void
 ) => ({
-  responseType: 'stream' as ResponseType,
+  responseType: 'stream',
   onDownloadProgress: (e: any) => {
     try {
-      if (e.currentTarget.status !== 200) {
-        onData('', new Error(e.currentTarget.responseText), false)
+      if (e.currentTarget?.status !== 200) {
+        onData('', new Error(e.currentTarget?.responseText), false)
         return
       }
 
-      const lines = e.currentTarget.response
+      const lines = e.currentTarget?.response
         .toString()
         .split('\n')
         .filter((line) => line.trim() !== '')
@@ -59,7 +59,7 @@ const axiosOptionForOpenAI = (
       }
     } catch (e) {
       // expose current response for error display
-      onData?.('', e.currentTarget.response)
+      onData?.('', e.currentTarget?.response)
     }
   },
 })
@@ -84,7 +84,10 @@ export const handelPrompt = async (prompt: string, ref: any, onData: (text: stri
       },
       {
         ...axiosOptionForOpenAI(onData),
-        signal: controller.signal
+        signal: controller.signal,
+        headers: {
+          'User-Agent': null,
+        },
       }
     )
   } catch (error: any) {

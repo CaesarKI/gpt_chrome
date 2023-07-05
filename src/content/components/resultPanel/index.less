@@ -45,6 +45,7 @@
     color: black;
     background-color: rgb(244, 244, 245);
     overflow-y: auto;
+    word-break: break-all;
     .stop{
       text-align: center;
       font-size: 18px;
@@ -58,6 +59,12 @@
         z-index: 10;
       }
     }
+    .hideScrollBar{
+      overflow-y: hidden;
+    }
+    .showScrollBar{
+      overflow-y: scroll;
+    }
   }
   .footer{
     width: 500px;
@@ -65,7 +72,6 @@
     background-color: rgb(244, 244, 245);
     display: flex;
     align-items: center;
-    z-index: 10;
     background: whitesmoke;
     justify-content: center;
     border-bottom-right-radius: 15px;
