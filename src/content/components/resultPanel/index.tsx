@@ -29,13 +29,16 @@ export default function ResultPanel(props: ResultPanelType) {
   const iconRef = useRef(null)
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
+  const [ending, setEnding] = useState(false)
   const container = document.querySelector(tag)
+  const bodyRef=useRef(null)
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
 
   const handler = (text: string, err: any, end: boolean | undefined) => {
     if (end) {
       setText(text)
       setLoading(false)
+      setEnding(true)
       return
     }
 
@@ -44,6 +47,13 @@ export default function ResultPanel(props: ResultPanelType) {
       setLoading(false)
     } else {
       setText(text)
+      handelScroll()
+    }
+  }
+
+  const handelScroll=()=>{
+    if(bodyRef.current){
+      bodyRef.current.scrollTop=bodyRef.current.scrollHeight
     }
   }
 
@@ -150,55 +160,55 @@ export default function ResultPanel(props: ResultPanelType) {
         </code >
       )
     }
-    if(match){
+    if (match) {
       return renderBlock()
-    }else{
+    } else {
       return renderRow()
     }
 
   }
 
 
-    const markdownRender = () => {
-      return <ReactMarkdown
-        remarkPlugins={[remarkMath, remarkGfm]}
-        rehypePlugins={[rehypeKatex]}
-        components={{
-          code: CodeBlock
-        }}>{text}</ReactMarkdown>;
-    }
+  const markdownRender = () => {
+    return <ReactMarkdown
+      remarkPlugins={[remarkMath, remarkGfm]}
+      rehypePlugins={[rehypeKatex]}
+      components={{
+        code: CodeBlock
+      }}>{text}</ReactMarkdown>;
+  }
 
-    const jump = () => {
-      console.log('jump')
-      browser.runtime.sendMessage({
-        type: "jump"
-      });
-    }
+  const jump = () => {
+    console.log('jump')
+    browser.runtime.sendMessage({
+      type: "jump"
+    });
+  }
 
 
-    return (
-      <div className={style.resultPanel} id='resultPandel'  >
-        <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
-          <div className={style.left} onMouseDown={e => e.stopPropagation()} >
-            <ArrowLeftOutlined className={style.icon} onClick={handelback} />
-            <CloseOutlined className={style.icon} onClick={handelClose} />
-          </div>
-          <div className={style.right} onMouseDown={e => e.stopPropagation()}>
-            <SettingOutlined className={style.icon} onClick={jump} />
-          </div>
+  return (
+    <div className={style.resultPanel} id='resultPandel'  >
+      <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
+        <div className={style.left} onMouseDown={e => e.stopPropagation()} >
+          <ArrowLeftOutlined className={style.icon} onClick={handelback} />
+          <CloseOutlined className={style.icon} onClick={handelClose} />
         </div>
-        <div className={style.body}>
-          <div className={style.stop}>
-            {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
-          </div>
-          <div>{markdownRender()}</div>
-        </div>
-        <div className={style.footer}>
-          <CopyOutlined className={style.icon} onClick={handelCopy} />
-          <RedoOutlined className={style.icon} onClick={handelGenerator} />
+        <div className={style.right} onMouseDown={e => e.stopPropagation()}>
+          <SettingOutlined className={style.icon} onClick={jump} />
         </div>
       </div>
-    )
-  }
+      <div className={style.body} ref={bodyRef}>
+        <div className={style.stop}>
+          {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
+        </div>
+        <div>{markdownRender()}</div>
+      </div>
+      {ending && <div className={style.footer}>
+        <CopyOutlined className={style.icon} onClick={handelCopy} />
+        <RedoOutlined className={style.icon} onClick={handelGenerator} />
+      </div>}
+    </div>
+  )
+}
 
 
