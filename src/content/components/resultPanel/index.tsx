@@ -56,12 +56,12 @@ export default function ResultPanel(props: ResultPanelType) {
     }
   }
 
-  useEffect(() => {
-    if (flag && bodyRef.current) {
-      const current = bodyRef.current
-      current.scrollTop = current.scrollHeight;
-    }
-  }, [text])
+  // useEffect(() => {
+  //   if (flag && bodyRef.current) {
+  //     const current = bodyRef.current
+  //     current.scrollTop = current.scrollHeight;
+  //   }
+  // }, [text])
 
   // const handelScrollBottom = () => {
   //   if (bodyRef.current) {
