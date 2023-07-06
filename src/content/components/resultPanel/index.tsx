@@ -1,4 +1,4 @@
-import React, { DOMElement, useEffect, useMemo, useRef, useState } from 'react'
+import React, { DOMElement, MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import style from './index.less'
 import { ArrowLeftOutlined, CloseOutlined, CopyOutlined, RedoOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { useScroll } from '../../hooks'
@@ -55,25 +55,6 @@ export default function ResultPanel(props: ResultPanelType) {
       setText(text)
     }
   }
-
-  // useEffect(() => {
-  //   if (flag && bodyRef.current) {
-  //     const current = bodyRef.current
-  //     current.scrollTop = current.scrollHeight;
-  //   }
-  // }, [text])
-
-  // const handelScrollBottom = () => {
-  //   if (bodyRef.current) {
-  //     const current = bodyRef.current
-  //     if (current.scrollTop + current.clientHeight >= current.scrollHeight) {
-  //       current.scrollTop = current.scrollHeight;
-  //       console.log(current.scrollTop, current.clientHeight, current.scrollHeight);
-  //     }
-  //   }
-    
-  //   setFlag(false)
-  // }
 
   const quickReplace = (value) => {
     const reg = /(\$1)$/
@@ -227,6 +208,7 @@ export default function ResultPanel(props: ResultPanelType) {
           )}
         </div>
         <div>{markdownRender()}</div>
+        {loading && <AutoScroll></AutoScroll>}
       </div>
       {ending && (<div className={style.footer}>
         <CopyOutlined className={style.icon} onClick={handelCopy} />
@@ -239,3 +221,33 @@ export default function ResultPanel(props: ResultPanelType) {
 }
 
 
+
+const AutoScroll: React.FC = () => {
+  const divRef = useRef<HTMLDivElement>()
+
+  useVisibleEffect(divRef)
+
+  return <div className={style.scrollBox} ref={divRef}></div>
+}
+
+const useVisibleEffect = (ref: MutableRefObject<HTMLDivElement>) => {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.intersectionRatio !== 1) {
+          ref.current.scrollIntoView({
+            behavior: 'smooth',
+          })
+        }
+      })
+    })
+
+    if (!ref.current) {
+      return
+    }
+
+    observer.observe(ref.current)
+
+    return () => observer.disconnect()
+  }, [])
+}
