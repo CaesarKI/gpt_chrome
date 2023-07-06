@@ -91,7 +91,7 @@ export default () => {
         ],
       },
       devtool: 'source-map',
-      mode: 'development',
+      mode: process.env.NODE_ENV,
       devServer: {
         static: {
           directory: path.join(__dirname, './dist/content'),
