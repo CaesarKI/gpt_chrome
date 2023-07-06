@@ -41,11 +41,15 @@ export default function App() {
       const child = root.querySelector('#card')
       if (child) return
       clearTimeout(timer)
-      let selectedText = window.getSelection()?.toString();
+      const selection = window.getSelection()
+      let selectedText = selection?.toString();
+      let range:any,rect
       //@ts-ignore
-      const range: any = window.getSelection()?.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
       if (selectedText) {
+         range = selection?.rangeCount && selection?.getRangeAt(0);
+         rect = range?.getBoundingClientRect();
+      }
+      if (selectedText && rect) {
         store.setValue('text', selectedText)
         var card = document.createElement('div');
         const btn = document.createElement('div')
