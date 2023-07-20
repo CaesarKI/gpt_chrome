@@ -5,6 +5,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+// import webpackCDNPlugin from 'webpack-cdn-plugin'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -118,6 +119,7 @@ export default () => {
           inject: true,
         })
       )
+      // result.plugins.push(new webpackCDNPlugin({command:true}))
     }
     config.push(result)
   })
