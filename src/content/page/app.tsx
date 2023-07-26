@@ -36,7 +36,7 @@ export default function App() {
     }
 
     document.addEventListener('mouseup', function (event: any) {
-      const name = 'zs'
+      let name = 'lisi'
       const child = root.querySelector('#card')
       if (child) return
       clearTimeout(timer)
