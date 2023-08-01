@@ -12,6 +12,7 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css' // `rehype-katex` does not import the CSS for you
 import store from '../../store'
+import instruct from '@/content/instruct';
 import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
 
@@ -57,11 +58,13 @@ export default function ResultPanel(props: ResultPanelType) {
   }
 
   const quickReplace = (value) => {
-    const reg = /(\$1)$/
-    if (reg.test(value)) {
-      value = value.replace(reg, "翻译为中文")
+    const map = instruct.map
+    for (let item of map) {
+      if (item.reg.test(value)) {
+        value = value.replace(item.reg, item.label)
+        return value
+      }
     }
-    return value
   }
 
   const getMessage = async () => {
