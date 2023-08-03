@@ -7,7 +7,7 @@ const axiosOptionForOpenAI = (
   onDownloadProgress: (e: any) => {
     try {
       if (e.currentTarget?.status !== 200) {
-        onData('', new Error(e.currentTarget?.responseText), false)
+        onData('', new Error(e?.currentTarget?.responseText), false)
         return
       }
 
@@ -16,9 +16,7 @@ const axiosOptionForOpenAI = (
         .split('\n')
         .filter((line) => line.trim() !== '')
 
-
       let result = ''
-
 
       let ended = false
 
@@ -59,15 +57,19 @@ const axiosOptionForOpenAI = (
       }
     } catch (e) {
       // expose current response for error display
-      onData?.('', e.currentTarget?.response)
+      onData?.('', e?.currentTarget?.response)
     }
   },
 })
 
-export const handelPrompt = async (prompt: string, ref: any, onData: (text: string, err?: any, end?: boolean) => void) => {
+export const handelPrompt = async (
+  prompt: string,
+  ref: any,
+  onData: (text: string, err?: any, end?: boolean) => void
+) => {
   const gpt = store.getValue('gpt')
   const openai = store.getValue('openai')
-  const controller = new AbortController();
+  const controller = new AbortController()
   const commonOption = {
     max_tokens: 4000 - prompt.replace(/[\u4e00-\u9fa5]/g, 'aa').length,
     stream: true,
@@ -75,7 +77,6 @@ export const handelPrompt = async (prompt: string, ref: any, onData: (text: stri
     temperature: Number(openai.temperature),
   }
   ref.current = controller
-
   try {
     await gpt.createChatCompletion(
       {
@@ -91,6 +92,6 @@ export const handelPrompt = async (prompt: string, ref: any, onData: (text: stri
       }
     )
   } catch (error: any) {
-    console.log(error.message);
+    console.log(error.message)
   }
 }

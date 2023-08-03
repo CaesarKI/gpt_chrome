@@ -51,6 +51,7 @@
     "webpack-dev-server": "^4.15.0"
   },
   "dependencies": {
+    "clipboard-copy": "^4.0.1",
     "react-markdown": "^8.0.7"
   }
 }

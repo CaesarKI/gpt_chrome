@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import browser from 'webextension-polyfill'
 import { message, Tooltip } from 'antd'
+import copy from "clipboard-copy";
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
@@ -31,7 +32,6 @@ export default function ResultPanel(props: ResultPanelType) {
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
   const [ending, setEnding] = useState(false)
-  const [flag, setFlag] = useState(true)
   const container = document.querySelector(tag)
   const bodyRef = useRef(null)
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
@@ -62,9 +62,11 @@ export default function ResultPanel(props: ResultPanelType) {
     for (let item of map) {
       if (item.reg.test(value)) {
         value = value.replace(item.reg, item.label)
-        return value
+        break
       }
     }
+    return value
+
   }
 
   const getMessage = async () => {
@@ -99,7 +101,7 @@ export default function ResultPanel(props: ResultPanelType) {
   }
 
   const handelCopy = (e: any) => {
-    navigator.clipboard.writeText(text)
+    copy(text)
       .then(() => {
         message.info('内容已经复制到剪切板')
       }).catch(() => {
@@ -132,7 +134,7 @@ export default function ResultPanel(props: ResultPanelType) {
   const CodeBlock = ({ node, inline, className, children, ...props }) => {
     const match = /language-(\w+)/.exec(className || '')
     const handelCopyCode = () => {
-      navigator.clipboard.writeText(children)
+      copy(children)
         .then(() => {
           message.info('内容已经复制到剪切板')
         }).catch(() => {
@@ -193,8 +195,12 @@ export default function ResultPanel(props: ResultPanelType) {
     <div className={style.resultPanel} id='resultPandel'  >
       <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
         <div className={style.left} onMouseDown={e => e.stopPropagation()} >
-          <ArrowLeftOutlined className={style.icon} onClick={handelback} />
-          <CloseOutlined className={style.icon} onClick={handelClose} />
+          <Tooltip title='返回上一步' zIndex={11111}>
+            <ArrowLeftOutlined className={style.icon} onClick={handelback} />
+          </Tooltip>
+          <Tooltip title='关闭' zIndex={11111}>
+            <CloseOutlined className={style.icon} onClick={handelClose} />
+          </Tooltip>
         </div>
         <div className={style.right} onMouseDown={e => e.stopPropagation()}>
           <Tooltip title='跳转到配置面板' zIndex={11111}>
@@ -214,7 +220,9 @@ export default function ResultPanel(props: ResultPanelType) {
         {loading && <AutoScroll></AutoScroll>}
       </div>
       {ending && (<div className={style.footer}>
-        <CopyOutlined className={style.icon} onClick={handelCopy} />
+        <Tooltip title='复制' zIndex={11111}>
+          <CopyOutlined className={style.icon} onClick={handelCopy} />
+        </Tooltip>
         <Tooltip title='再次生成对话' zIndex={11111}>
           <RedoOutlined className={style.icon} onClick={handelGenerator} />
         </Tooltip>
