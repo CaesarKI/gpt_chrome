@@ -25,6 +25,7 @@ export interface ResultPanelType {
 
 
 export default function ResultPanel(props: ResultPanelType) {
+  // 增加测试信息
   const { onChangePanel } = props
   const [dragRef, handleMouseDown] = useScroll()
   const controllerRef = useRef<any>({})
