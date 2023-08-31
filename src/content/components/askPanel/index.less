@@ -1,5 +1,5 @@
 .askPanel {
-  max-width: 350px;
+  width: 400px;
   max-height: 320px;
   .content {
     position: relative;
@@ -8,6 +8,7 @@
       position: absolute;
       z-index: 10;
       top:50%;
+      color: black;
       transform: translateY(-50%);
       left: 5px;
       font-size: 16px;
@@ -20,6 +21,12 @@
     :global {
       .ant-input {
         padding-left: 25px ;
+      }
+      .ant-input-affix-wrapper{
+        border: 2px solid black;
+      }
+      .ant-input-affix-wrapper:hover{
+        border: 2px solid black;
       }
     }
   }

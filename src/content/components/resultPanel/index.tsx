@@ -1,4 +1,4 @@
-import React, { DOMElement, useEffect, useRef, useState } from 'react'
+import React, { DOMElement, MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import style from './index.less'
 import { ArrowLeftOutlined, CloseOutlined, CopyOutlined, RedoOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons'
 import { useScroll } from '../../hooks'
@@ -6,10 +6,17 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import browser from 'webextension-polyfill'
-import { message } from 'antd'
+import { message, Tooltip } from 'antd'
+import copy from "clipboard-copy";
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css' // `rehype-katex` does not import the CSS for you
 import store from '../../store'
+import instruct from '@/content/instruct';
 import { handelPrompt } from '@/server/openai';
 import { tag } from '@/content/shdow-dom';
+
 
 export interface ResultPanelType {
   onChangePanel: (flag: boolean) => void
@@ -25,27 +32,47 @@ export default function ResultPanel(props: ResultPanelType) {
   const iconRef = useRef(null)
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
+  const [ending, setEnding] = useState(false)
   const container = document.querySelector(tag)
+  const bodyRef = useRef(null)
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
 
-  const handler = (text: string, err: any, end: boolean | undefined) => {
+  const bodyStyle = useMemo(() => {
+    return !ending ? { 'borderBottomLeftRadius': 15, 'borderBottomRightRadius': 15 } : { 'borderRadius': 0 }
+  }, [ending])
 
+  const handler = (text: string, err: any, end: boolean | undefined) => {
     if (end) {
       setText(text)
       setLoading(false)
+      setEnding(true)
       return
     }
 
     if (err) {
       setText(err.message)
       setLoading(false)
+      setEnding(true)
     } else {
       setText(text)
     }
   }
 
+  const quickReplace = (value) => {
+    const map = instruct.map
+    for (let item of map) {
+      if (item.reg.test(value)) {
+        value = value.replace(item.reg, item.label)
+        break
+      }
+    }
+    return value
+
+  }
+
   const getMessage = async () => {
-    const value = store.getValue('prompt')
+    let value = store.getValue('prompt')
+    value = quickReplace(value)
     const openai = store.getValue('openai')
     if (typeof openai === 'object' && openai.key) {
       value && handelPrompt(value, controllerRef, handler)
@@ -75,7 +102,7 @@ export default function ResultPanel(props: ResultPanelType) {
   }
 
   const handelCopy = (e: any) => {
-    navigator.clipboard.writeText(text)
+    copy(text)
       .then(() => {
         message.info('内容已经复制到剪切板')
       }).catch(() => {
@@ -93,6 +120,7 @@ export default function ResultPanel(props: ResultPanelType) {
   const handelStop = (e: any) => {
     cancelRequest()
     setLoading(false)
+    setEnding(true)
     e.stopPropagation()
   }
 
@@ -101,19 +129,59 @@ export default function ResultPanel(props: ResultPanelType) {
     getMessage()
     setText("")
     setLoading(true)
+    setEnding(false)
+  }
+
+  const CodeBlock = ({ node, inline, className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || '')
+    const handelCopyCode = () => {
+      copy(children)
+        .then(() => {
+          message.info('内容已经复制到剪切板')
+        }).catch(() => {
+          message.info('内容复制失败')
+        })
+    }
+
+    const renderBlock = () => {
+      return (
+        <div className={style.block} >
+          <CopyOutlined className={`${style.icon} ${style.codeIcon}`} onClick={handelCopyCode} />
+          <SyntaxHighlighter
+            {...props}
+            children={String(children).replace(/\n$/, '')}
+            style={materialDark}
+            language={match[1]}
+            PreTag="div"
+          />
+        </div >
+      )
+    }
+    const renderRow = () => {
+      return (
+        <code {
+          ...props
+        } className={className} >
+          {String(children).replace(/\n$/, '')}
+        </code >
+      )
+    }
+    if (match) {
+      return renderBlock()
+    } else {
+      return renderRow()
+    }
 
   }
 
-  const CodeBlock = (props: any) => {
-    return (
-      <SyntaxHighlighter language={props.className} style={materialDark}>
-        {props.children[0]}
-      </SyntaxHighlighter>
-    );
-  };
 
   const markdownRender = () => {
-    return <ReactMarkdown components={{ code: CodeBlock }}>{text}</ReactMarkdown>;
+    return <ReactMarkdown
+      remarkPlugins={[remarkMath, remarkGfm]}
+      rehypePlugins={[rehypeKatex]}
+      components={{
+        code: CodeBlock
+      }}>{text}</ReactMarkdown>;
   }
 
   const jump = () => {
@@ -123,28 +191,75 @@ export default function ResultPanel(props: ResultPanelType) {
     });
   }
 
-  return (
-    <div className={style.resultPanel}>
-      <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
-        <div className={style.left}>
-          <ArrowLeftOutlined className={style.icon} onClick={handelback} />
-          <CloseOutlined className={style.icon} onClick={handelClose} />
-        </div>
-        <div className={style.right}>
-          <SettingOutlined className={style.icon} onClick={jump} />
-        </div>
-      </div>
-      <div className={style.body}>
-        <div className={style.stop}>
-          {loading && <SyncOutlined spin onClick={handelStop} ref={iconRef} />}
-        </div>
-        {markdownRender()}
-      </div>
-      <div className={style.footer}>
-        <CopyOutlined className={style.icon} onClick={handelCopy} />
-        <RedoOutlined className={style.icon} onClick={handelGenerator} />
-      </div>
 
+  return (
+    <div className={style.resultPanel} id='resultPandel'  >
+      <div className={style.header} ref={dragRef} onMouseDown={handleMouseDown}>
+        <div className={style.left} onMouseDown={e => e.stopPropagation()} >
+          <Tooltip title='返回上一步' zIndex={11111}>
+            <ArrowLeftOutlined className={style.icon} onClick={handelback} />
+          </Tooltip>
+          <Tooltip title='关闭' zIndex={11111}>
+            <CloseOutlined className={style.icon} onClick={handelClose} />
+          </Tooltip>
+        </div>
+        <div className={style.right} onMouseDown={e => e.stopPropagation()}>
+          <Tooltip title='跳转到配置面板' zIndex={11111}>
+            <SettingOutlined className={style.icon} onClick={jump} />
+          </Tooltip>
+        </div>
+      </div>
+      <div className={`${style.body}`} ref={bodyRef} style={bodyStyle}  >
+        <div className={style.stop}>
+          {loading && (
+            <Tooltip title='停止生成对话' zIndex={11111}>
+              <SyncOutlined spin onClick={handelStop} ref={iconRef} />
+            </Tooltip>
+          )}
+        </div>
+        <div>{markdownRender()}</div>
+        {loading && <AutoScroll></AutoScroll>}
+      </div>
+      {ending && (<div className={style.footer}>
+        <Tooltip title='复制' zIndex={11111}>
+          <CopyOutlined className={style.icon} onClick={handelCopy} />
+        </Tooltip>
+        <Tooltip title='再次生成对话' zIndex={11111}>
+          <RedoOutlined className={style.icon} onClick={handelGenerator} />
+        </Tooltip>
+      </div>)}
     </div>
   )
+}
+
+
+
+const AutoScroll: React.FC = () => {
+  const divRef = useRef<HTMLDivElement>()
+
+  useVisibleEffect(divRef)
+
+  return <div className={style.scrollBox} ref={divRef}></div>
+}
+
+const useVisibleEffect = (ref: MutableRefObject<HTMLDivElement>) => {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.intersectionRatio !== 1) {
+          ref.current.scrollIntoView({
+            behavior: 'smooth',
+          })
+        }
+      })
+    })
+
+    if (!ref.current) {
+      return
+    }
+
+    observer.observe(ref.current)
+
+    return () => observer.disconnect()
+  }, [])
 }

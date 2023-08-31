@@ -1,12 +1,18 @@
 import path from 'path'
 import fs from 'fs'
-import { fileURLToPath } from 'url'
+import {
+  fileURLToPath
+} from 'url'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import {
+  CleanWebpackPlugin
+} from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+// import webpackCDNPlugin from 'webpack-cdn-plugin'
 
-const __filename = fileURLToPath(import.meta.url)
+const __filename = fileURLToPath(
+  import.meta.url)
 const __dirname = path.dirname(__filename)
 const jsonData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, './package.json'), {
@@ -37,8 +43,14 @@ export default () => {
         //   inject: false,
         // }),
         new CopyWebpackPlugin({
-          patterns: [
-            { from: 'src/assets/', to: '../assets' },
+          patterns: [{
+              from: 'src/assets/',
+              to: '../assets'
+            },
+            {
+              from: 'manifest.json',
+              to: '../manifest.json'
+            },
             // 可以添加多个文件和目标路径的配置
           ],
         }),
@@ -50,8 +62,7 @@ export default () => {
         },
       },
       module: {
-        rules: [
-          {
+        rules: [{
             test: /\.(ts|tsx)$/,
             exclude: /node_modules/,
             use: ['babel-loader'],
@@ -90,7 +101,7 @@ export default () => {
         ],
       },
       devtool: 'source-map',
-      mode: 'development',
+      mode: process.env.NODE_ENV,
       devServer: {
         static: {
           directory: path.join(__dirname, './dist/content'),
@@ -117,6 +128,7 @@ export default () => {
           inject: true,
         })
       )
+      // result.plugins.push(new webpackCDNPlugin({command:true}))
     }
     config.push(result)
   })

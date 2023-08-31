@@ -22,7 +22,8 @@ export default function App() {
         return
       }
       var card = shadowRoot.querySelector('#card')
-      if (card && container !== event.target) {
+      const resultPandel = shadowRoot.querySelector('#resultPandel')
+      if (card && container !== event.target && !resultPandel) {
         card.remove()
       }
     }
@@ -35,35 +36,36 @@ export default function App() {
       event.stopPropagation()
     }
 
-    document.addEventListener('mouseup', function (event: any) {
-      let name = 'lisi'
-      const child = root.querySelector('#card')
-      if (child) return
-      clearTimeout(timer)
-      let selectedText = window.getSelection()?.toString()
-      //@ts-ignore
-      const range: any = window.getSelection()?.getRangeAt(0)
-      const rect = range.getBoundingClientRect()
-      if (selectedText) {
-        store.setValue('text', selectedText)
-        var card = document.createElement('div')
-        const btn = document.createElement('div')
-        btn.setAttribute('id', 'btn')
-        card.setAttribute('id', 'card')
-        btn.textContent = 'w'
-        card.appendChild(btn)
-        card.style.cssText = `left:${Math.abs(rect.left - 32)}px;top:${
-          rect.top + rect.height
-        }px`
-        flag = true
-        root.appendChild(card)
-        btn.addEventListener('click', handelCardClick)
-        // timer=setTimeout(()=>{
-        //   const event=new Event('click')
-        //   document.dispatchEvent(event)
-        // },3000)
-      }
-    })
+    // document.addEventListener('mouseup', function (event: any) {
+    //   const child = root.querySelector('#card')
+    //   if (child) return
+    //   clearTimeout(timer)
+    //   const selection = window.getSelection()
+    //   let selectedText = selection?.toString();
+    //   let range:any,rect
+    //   //@ts-ignore
+    //   if (selectedText) {
+    //      range = selection?.rangeCount && selection?.getRangeAt(0);
+    //      rect = range?.getBoundingClientRect();
+    //   }
+    //   if (selectedText && rect) {
+    //     store.setValue('text', selectedText)
+    //     var card = document.createElement('div');
+    //     const btn = document.createElement('div')
+    //     btn.setAttribute('id', 'btn')
+    //     card.setAttribute('id', 'card')
+    //     btn.textContent = 'w';
+    //     card.appendChild(btn)
+    //     card.style.cssText = `left:${Math.abs(rect.left - 32)}px;top:${rect.top + rect.height}px`
+    //     flag = true
+    //     root.appendChild(card);
+    //     btn.addEventListener('click', handelCardClick)
+    //     // timer=setTimeout(()=>{
+    //     //   const event=new Event('click')
+    //     //   document.dispatchEvent(event)
+    //     // },3000)
+    //   }
+    // });
 
     document.addEventListener('click', handelClick)
   }
@@ -82,7 +84,7 @@ export default function App() {
     if (child) return
     var card = document.createElement('div')
     card.setAttribute('id', 'card')
-    card.style.cssText = `left:50%;top:30%;transform:translate(-50%,-50%)`
+    card.style.cssText = `left:50%;top:120px;transform:translateX(-50%)`
     root.appendChild(card)
     createContainer(card)
   }

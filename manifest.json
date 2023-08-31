@@ -6,18 +6,18 @@
   "author": "https://github.com/CaesarKI",
   "action": {
     "default_title": "gpt_chrome",
-    "defult_icon": "dist/assets/icon.png"
+    "defult_icon": "assets/icon.png"
   },
   "icons": {
-    "16": "dist/assets/icon.png",
-    "32": "dist/assets/icon.png",
-    "48": "dist/assets/icon.png",
-    "128": "dist/assets/icon.png"
+    "16": "assets/icon.png",
+    "32": "assets/icon.png",
+    "48": "assets/icon.png",
+    "128": "assets/icon.png"
   },
   "content_scripts": [
     {
       "js": [
-        "dist/content/index.js"
+        "content/index.js"
       ],
       "matches": [
         "*://*/*"
@@ -26,17 +26,17 @@
     }
   ],
   "options_ui": {
-    "page": "dist/options/index.html",
+    "page": "options/index.html",
     "open_in_tab": true
   },
   "background": {
-    "service_worker": "dist/background/index.js"
+    "service_worker": "background/index.js"
   },
   "commands": {
     "open-content": {
       "suggested_key": {
         "default": "Alt+1",
-        "mac": "Command+1"
+        "mac": "Command+Shift+1"
       },
       "description": "Open Content"
     }

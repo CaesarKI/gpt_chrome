@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import 'antd/dist/reset.css';
 import { Button, Card, Form, Input, Radio, Tooltip, message } from 'antd';
 import browser from 'webextension-polyfill'
@@ -6,22 +6,36 @@ import styles from './index.less'
 
 const Item = Form.Item
 export default function App() {
-  const initValue = {
-    temperature: '0.7',
-    address: 'https://api.openai.com/v1/chat',
-    model: 'gpt-3.5-turbo'
-  }
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    browser.storage.sync.get('openai').then(({ openai: data }) => {
+      form.setFieldsValue(data||{})
+    })
+  }, [])
+
+  const initValue = useMemo(() => {
+    return {
+      temperature: '0.7',
+      address: 'https://api.openai.com/v1/chat',
+      model: 'gpt-3.5-turbo',
+      key: ""
+    }
+  }, [])
 
   const handelSumbitForm = async (value) => {
     await browser.storage.sync.set({ 'openai': value });
     message.info('更改成功')
   }
 
+
   return (
     <div className={styles.container}>
       <Card title='Open AI'>
         <Form
           onFinish={handelSumbitForm}
+          form={form}
           initialValues={initValue}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}>
