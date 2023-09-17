@@ -23,6 +23,8 @@ export default function AskPanel(props: ResultPanelType) {
 
 
   const handelPressEnter = async (e: any) => {
+    console.log('改变pressEnter');
+
     e.preventDefault()
     onChangePanel(true)
     store.setValue('prompt', value)
