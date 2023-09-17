@@ -32,6 +32,8 @@ export default function AskPanel(props: ResultPanelType) {
 
 
   useEffect(() => {
+    console.log('useEffect');
+
     const current: any = inputRef.current
     if (current && value) {
       current.focus()
