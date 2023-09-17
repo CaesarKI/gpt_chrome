@@ -18,6 +18,8 @@ export default function AskPanel(props: ResultPanelType) {
   const shadowRoot: ShadowRoot = container?.shadowRoot as ShadowRoot
 
   const handelPressEnter = async (e: any) => {
+    console.log('改变pressEnter');
+
     e.preventDefault()
     onChangePanel(true)
     store.setValue('prompt', value)
@@ -33,6 +35,8 @@ export default function AskPanel(props: ResultPanelType) {
   // }, [])
 
   useEffect(() => {
+    console.log('useEffect');
+
     const current: any = inputRef.current
     if (current) {
       current.focus()
