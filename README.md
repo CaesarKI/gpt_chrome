@@ -2,7 +2,7 @@
 
 ## 支持后台自定义配置
 
-![image-20240307163132959](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/back.png)
+![image-20240307163132959](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/img/back.png)
 
 ## 插件效果展示
 
@@ -12,9 +12,9 @@ Window 快捷键 Alt+1
 
 使用快捷键会弹出一个输入框，输入内容后会调用 gpt 接口将答复内容展示在页面上。页面展示如下：
 
-![image-20240307163802445](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/input.png)
+![image-20240307163802445](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/img/input.png)
 
-![image-20240307164012188](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/panel.png)
+![image-20240307164012188](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/static/img/panel.png)
 
 ## 使用方式
 
