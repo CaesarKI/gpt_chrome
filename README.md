@@ -2,7 +2,7 @@
 
 ## 支持后台自定义配置
 
-![image-20240307163132959](/Users/keaidebaby/Library/Application Support/typora-user-images/image-20240307163132959.png)
+![image-20240307163132959](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/back.png)
 
 ## 插件效果展示
 
@@ -12,9 +12,9 @@ Window 快捷键 Alt+1
 
 使用快捷键会弹出一个输入框，输入内容后会调用 gpt 接口将答复内容展示在页面上。页面展示如下：
 
-![image-20240307163802445](/Users/keaidebaby/Library/Application Support/typora-user-images/image-20240307163802445.png)
+![image-20240307163802445](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/input.png)
 
-![image-20240307164012188](/Users/keaidebaby/Library/Application Support/typora-user-images/image-20240307164012188.png)
+![image-20240307164012188](https://raw.githubusercontent.com/CaesarKI/gpt_chrome/master/panel.png)
 
 ## 使用方式
 
