@@ -19,6 +19,6 @@ Window 快捷键 Alt+1
 ## 使用方式
 
 1. **git clone**仓库
-2. **npm install **安装依赖，**node** 版本 14.x.x
+2. **npm install**安装依赖，**node** 版本 14.x.x
 3. **npm run build:dev** 打包代码
 4. 将打包生成的 dist 文件放入 chrome 插件解压后便可以使用了
